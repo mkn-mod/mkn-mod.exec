@@ -33,13 +33,13 @@ class MaikenModule : public maiken::Module{
             }
         }
     public:
-        void compile(maiken::Application& a, const YAML::Node& node) throw (std::exception){
+        void compile(maiken::Application& a, const YAML::Node& node) throw (std::exception) override{
             if(check(node)) exec(node.Scalar());
         }
-        void link(maiken::Application& a, const YAML::Node& node) throw (std::exception){
+        void link(maiken::Application& a, const YAML::Node& node) throw (std::exception) override{
             if(check(node)) exec(node.Scalar());
         }
-        void pack(maiken::Application& a, const YAML::Node& node) throw (std::exception){
+        void pack(maiken::Application& a, const YAML::Node& node) throw (std::exception) override{
             if(check(node)) exec(node.Scalar());
         }
 };
