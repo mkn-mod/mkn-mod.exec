@@ -31,58 +31,74 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <maiken.hpp>
 #define KUL_EXPORT
-#undef  _KUL_DEFS_HPP_
+#undef _KUL_DEFS_HPP_
 #include <kul/defs.hpp>
 
-#ifndef _MKN_MOD_EXEC_NOT_STRING
-#define _MKN_MOD_EXEC_NOT_STRING "Error: mkn-mod.exec expects a String as argument"
-#endif// _MKN_MOD_EXEC_NOT_STRING
+#ifndef _MKN_MOD_EXEC_UNSUPPORTED_TYPE_
+#define _MKN_MOD_EXEC_UNSUPPORTED_TYPE_ \
+  "Error: mkn-mod.exec is an unsupported type"
+#endif  // _MKN_MOD_EXEC_UNSUPPORTED_TYPE_
 
 #ifndef _MKN_MOD_EXEC_EMPTY_STRING
-#define _MKN_MOD_EXEC_EMPTY_STRING "Warning: empty string provided to mkn-mod.exec"
-#endif//_MKN_MOD_EXEC_EMPTY_STRING
+#define _MKN_MOD_EXEC_EMPTY_STRING \
+  "Warning: empty string provided to mkn-mod.exec"
+#endif  //_MKN_MOD_EXEC_EMPTY_STRING
 
-namespace mkn { namespace mod { namespace exec {
-class MaikenModule : public maiken::Module{
-    private:
-        bool check(const YAML::Node& node) throw (std::exception){
-            if(node.IsNull()) return false;
-            if(!node.IsScalar()) 
-                KEXCEPT(maiken::ModuleException, _MKN_MOD_EXEC_NOT_STRING);
-            return true;
-        }
-        void exec(const std::string& s) throw (std::exception){
-            for(const auto& line : kul::String::LINES(s)){
-                std::vector<std::string> args = kul::cli::asArgs(line);
-                if(!args.empty()){
-                    kul::Process p(args[0]);
-                    for(size_t i = 1; i < args.size(); i++) p << args[i];
-                    p.start();
-                }else
-                    KERR << _MKN_MOD_EXEC_EMPTY_STRING;
-            }
-        }
-    public:
-        void compile(maiken::Application& a, const YAML::Node& node) throw (std::exception) override{
-            if(check(node)) exec(node.Scalar());
-        }
-        void link(maiken::Application& a, const YAML::Node& node) throw (std::exception) override{
-            if(check(node)) exec(node.Scalar());
-        }
-        void pack(maiken::Application& a, const YAML::Node& node) throw (std::exception) override{
-            if(check(node)) exec(node.Scalar());
-        }
+namespace mkn {
+namespace mod {
+namespace exec {
+class MaikenModule : public maiken::Module {
+ private:
+  void exec(const std::string& s) KTHROW(std::exception) {
+    for (const auto& line : kul::String::LINES(s)) {
+      std::vector<std::string> args = kul::cli::asArgs(line);
+      if (!args.empty()) {
+        kul::Process p(args[0]);
+        for (size_t i = 1; i < args.size(); i++) p << args[i];
+        p.start();
+      } else
+        KERR << _MKN_MOD_EXEC_EMPTY_STRING;
+    }
+  }
+  void go(const YAML::Node& node) {
+    if (node.IsScalar())
+      exec(node.Scalar());
+    else if (node.IsSequence()) {
+      for (const auto& p : node) {
+        if (!p.IsScalar())
+          KEXCEPT(maiken::ModuleException, _MKN_MOD_EXEC_UNSUPPORTED_TYPE_);
+        exec(p.Scalar());
+      }
+    } else if (!node.IsNull())
+      KEXCEPT(maiken::ModuleException, _MKN_MOD_EXEC_UNSUPPORTED_TYPE_);
+  }
+
+ public:
+  void init(maiken::Application& a, const YAML::Node& node)
+      KTHROW(std::exception) override {
+    go(node);
+  }
+  void compile(maiken::Application& a, const YAML::Node& node)
+      KTHROW(std::exception) override {
+    go(node);
+  }
+  void link(maiken::Application& a, const YAML::Node& node)
+      KTHROW(std::exception) override {
+    go(node);
+  }
+  void pack(maiken::Application& a, const YAML::Node& node)
+      KTHROW(std::exception) override {
+    go(node);
+  }
 };
-}}}
+}  // namespace exec
+}  // namespace mod
+}  // namespace mkn
 
-extern "C" 
-KUL_PUBLISH 
-maiken::Module* maiken_module_construct() {
-    return new mkn :: mod :: exec :: MaikenModule;
+extern "C" KUL_PUBLISH maiken::Module* maiken_module_construct() {
+  return new mkn ::mod ::exec ::MaikenModule;
 }
 
-extern "C" 
-KUL_PUBLISH  
-void maiken_module_destruct(maiken::Module* p) {
-    delete p;
+extern "C" KUL_PUBLISH void maiken_module_destruct(maiken::Module* p) {
+  delete p;
 }

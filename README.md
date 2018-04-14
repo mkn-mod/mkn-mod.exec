@@ -1,6 +1,6 @@
 # mkn-mod.exec
 
-**Runtime command exectution** 
+**Runtime command exectution**
 
 
 ## Usage
@@ -16,9 +16,11 @@ multiple commands
 
     mod:
       - name: mkn-mod.exec
-        arg:
-            compile: |
-                echo command 1
-                echo command 2
+        init:
+         - echo command 1
+         - echo command 2
+        compile: |
+            echo command 1
+            echo command 2
 
 **Any command without 0 exit code will result in a phase failure**

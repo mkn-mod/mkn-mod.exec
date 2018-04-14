@@ -7,12 +7,11 @@ property:
     maiken_location: ${MKN_HOME}/app/mkn/${version}
 
 src: mod.cpp
-dep:
-  - name: mkn
-    profile: lib
-    version: ${version}
-    local: ${maiken_location}
 if_arg:
     win_shared: -DYAML_CPP_DLL
     shared: -DKUL_SHARED
-lang: cpp
+dep:
+  - name: mkn
+    profile: mod
+    version: ${version}
+    local: ${maiken_location}
