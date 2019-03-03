@@ -55,7 +55,9 @@ class MaikenModule : public maiken::Module {
       if (!args.empty()) {
         kul::Process p(args[0]);
         for (size_t i = 1; i < args.size(); i++) p << args[i];
+        KLOG(DBG) << "mkn-mod.exec LAUNCHING: " << p;
         p.start();
+        KLOG(DBG) << "mkn-mod.exec EXIT CODE: " << p.exitCode();
       } else
         KERR << _MKN_MOD_EXEC_EMPTY_STRING;
     }
