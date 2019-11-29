@@ -72,19 +72,23 @@ class MaikenModule : public maiken::Module {
   }
 
  public:
-  void init(maiken::Application& a, const YAML::Node& node)
+  void init(maiken::Application& , const YAML::Node& node)
       KTHROW(std::exception) override {
     go(node);
   }
-  void compile(maiken::Application& a, const YAML::Node& node)
+  void compile(maiken::Application& , const YAML::Node& node)
       KTHROW(std::exception) override {
     go(node);
   }
-  void link(maiken::Application& a, const YAML::Node& node)
+  void link(maiken::Application& , const YAML::Node& node)
       KTHROW(std::exception) override {
     go(node);
   }
-  void pack(maiken::Application& a, const YAML::Node& node)
+  void test(maiken::Application& , const YAML::Node& node)
+      KTHROW(std::exception) override {
+    go(node);
+  }
+  void pack(maiken::Application& , const YAML::Node& node)
       KTHROW(std::exception) override {
     go(node);
   }

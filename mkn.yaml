@@ -7,6 +7,7 @@ property:
     maiken_location: ${MKN_HOME}/app/mkn/${version}
 
 src: mod.cpp
+mode: shared
 if_arg:
     win_shared: -DYAML_CPP_DLL
     shared: -DKUL_SHARED
