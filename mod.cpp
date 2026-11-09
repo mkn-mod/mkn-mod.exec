@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2013, Philip Deegan.
+Copyright (c) 2026, Philip Deegan.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,25 +28,28 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "maiken/module/init.hpp"
+#include "mkn/mod/init.hpp"  // IWYU pragma: keep
+
+#include "mkn/kul/cli.hpp"
+#include "mkn/kul/log.hpp"
+#include "mkn/kul/proc.hpp"
+#include "mkn/kul/string.hpp"
 
 #ifndef _MKN_MOD_EXEC_UNSUPPORTED_TYPE_
-#define _MKN_MOD_EXEC_UNSUPPORTED_TYPE_ \
-  "Error: mkn-mod.exec is an unsupported type"
+#define _MKN_MOD_EXEC_UNSUPPORTED_TYPE_ "Error: mkn-mod.exec is an unsupported type"
 #endif  // _MKN_MOD_EXEC_UNSUPPORTED_TYPE_
 
 #ifndef _MKN_MOD_EXEC_EMPTY_STRING
-#define _MKN_MOD_EXEC_EMPTY_STRING \
-  "Warning: empty string provided to mkn-mod.exec"
+#define _MKN_MOD_EXEC_EMPTY_STRING "Warning: empty string provided to mkn-mod.exec"
 #endif  //_MKN_MOD_EXEC_EMPTY_STRING
 
 namespace mkn {
 namespace mod {
 namespace exec {
-class MaikenModule : public maiken::Module {
+class MaikenModule : public mkn::mod::Module {
  private:
-  void exec(const std::string& s) KTHROW(std::exception) {
-    for (const auto& line : kul::String::LINES(s)) {
+  void exec(std::string const& s) KTHROW(std::exception) {
+    for (auto const& line : kul::String::LINES(s)) {
       std::vector<std::string> args = kul::cli::asArgs(line);
       if (!args.empty()) {
         kul::Process p(args[0]);
@@ -62,34 +65,28 @@ class MaikenModule : public maiken::Module {
     if (node.IsScalar())
       exec(node.Scalar());
     else if (node.IsSequence()) {
-      for (const auto& p : node) {
-        if (!p.IsScalar())
-          KEXCEPT(maiken::ModuleException, _MKN_MOD_EXEC_UNSUPPORTED_TYPE_);
+      for (auto const& p : node) {
+        if (!p.IsScalar()) KEXCEPT(mkn::mod::Exception, _MKN_MOD_EXEC_UNSUPPORTED_TYPE_);
         exec(p.Scalar());
       }
     } else if (!node.IsNull())
-      KEXCEPT(maiken::ModuleException, _MKN_MOD_EXEC_UNSUPPORTED_TYPE_);
+      KEXCEPT(mkn::mod::Exception, _MKN_MOD_EXEC_UNSUPPORTED_TYPE_);
   }
 
  public:
-  void init(maiken::Application& , const YAML::Node& node)
-      KTHROW(std::exception) override {
+  void init(mkn::mod::Context&, const YAML::Node& node) KTHROW(std::exception) override {
     go(node);
   }
-  void compile(maiken::Application& , const YAML::Node& node)
-      KTHROW(std::exception) override {
+  void compile(mkn::mod::Context&, const YAML::Node& node) KTHROW(std::exception) override {
     go(node);
   }
-  void link(maiken::Application& , const YAML::Node& node)
-      KTHROW(std::exception) override {
+  void link(mkn::mod::Context&, const YAML::Node& node) KTHROW(std::exception) override {
     go(node);
   }
-  void test(maiken::Application& , const YAML::Node& node)
-      KTHROW(std::exception) override {
+  void test(mkn::mod::Context&, const YAML::Node& node) KTHROW(std::exception) override {
     go(node);
   }
-  void pack(maiken::Application& , const YAML::Node& node)
-      KTHROW(std::exception) override {
+  void pack(mkn::mod::Context&, const YAML::Node& node) KTHROW(std::exception) override {
     go(node);
   }
 };
@@ -97,10 +94,8 @@ class MaikenModule : public maiken::Module {
 }  // namespace mod
 }  // namespace mkn
 
-extern "C" KUL_PUBLISH maiken::Module* maiken_module_construct() {
-  return new mkn ::mod ::exec ::MaikenModule;
+extern "C" MKN_KUL_PUBLISH mkn::mod::Module* maiken_module_construct() {
+  return new mkn::mod::exec::MaikenModule;
 }
 
-extern "C" KUL_PUBLISH void maiken_module_destruct(maiken::Module* p) {
-  delete p;
-}
+extern "C" MKN_KUL_PUBLISH void maiken_module_destruct(mkn::mod::Module* p) { delete p; }

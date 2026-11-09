@@ -1,15 +1,13 @@
 # mkn-mod.exec
 
-**Runtime command exectution**
+**Runtime command execution**
 
 
 ## Usage
 
     mod:
       - name: mkn-mod.exec
-        arg:
-            compile:
-                echo command
+        compile: echo command
 
 
 multiple commands

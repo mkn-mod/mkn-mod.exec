@@ -3,16 +3,17 @@
 name: mkn-mod.exec
 version: master
 
-property:
-    maiken_location: ${MKN_HOME}/app/mkn/${version}
-
 src: mod.cpp
 mode: shared
 if_arg:
     win_shared: -DYAML_CPP_DLL
-    shared: -DKUL_SHARED
-dep:
-  - name: mkn
-    profile: mod
-    version: ${version}
-    local: ${maiken_location}
+    shared: -DMKN_KUL_SHARED
+dep: mkn.mod
+
+profile:
+- name: test
+  mod:
+  - name: mkn-mod.exec
+    compile:
+    - git --version
+    - git --help
