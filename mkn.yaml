@@ -1,16 +1,21 @@
 
-
 name: mkn-mod.exec
 version: master
 
+parent: base
 src: mod.cpp
 mode: shared
-if_arg:
-    win_shared: -DYAML_CPP_DLL
-    shared: -DMKN_KUL_SHARED
-dep: mkn.mod
 
 profile:
+- name: base
+  dep: mkn.mod
+  if_dep:
+    bsd: parse.yaml[lib]
+    win: parse.yaml[lib]
+  if_arg:
+    shared: -DMKN_KUL_SHARED
+    win_static: -DYAML_CPP_STATIC_DEFINE
+
 - name: test
   mod:
   - name: mkn-mod.exec

@@ -35,7 +35,6 @@ jobs:
     - uses: actions/checkout@v6
 
     - env:
-        MKN_LIB_LINK_LIB: 1
         MKN_KUL_GIT_CO: --depth 1
       run: |
         $CURL_GET -o mkn ${PATH_GET}/mkn_arm_osx
