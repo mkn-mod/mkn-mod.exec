@@ -1,5 +1,9 @@
 
 name: mkn-mod.exec
+property:
+  # dependency versions: master on master, latest on latest (a bare dep is the default branch)
+  mkn.mod.version: master
+  parse.yaml.version: master
 version: master
 
 parent: base
@@ -8,10 +12,10 @@ mode: shared
 
 profile:
 - name: base
-  dep: mkn.mod
+  dep: mkn.mod#${mkn.mod.version}
   if_dep:
-    bsd: parse.yaml[lib]
-    win: parse.yaml[lib]
+    bsd: parse.yaml#${parse.yaml.version}[lib]
+    win: parse.yaml#${parse.yaml.version}[lib]
   if_arg:
     shared: -DMKN_KUL_SHARED
     win_static: -DYAML_CPP_STATIC_DEFINE
