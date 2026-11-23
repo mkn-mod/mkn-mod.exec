@@ -61,32 +61,32 @@ class MaikenModule : public mkn::mod::Module {
         KERR << _MKN_MOD_EXEC_EMPTY_STRING;
     }
   }
-  void go(const YAML::Node& node) {
-    if (node.IsScalar())
-      exec(node.Scalar());
-    else if (node.IsSequence()) {
-      for (auto const& p : node) {
-        if (!p.IsScalar()) KEXCEPT(mkn::mod::Exception, _MKN_MOD_EXEC_UNSUPPORTED_TYPE_);
-        exec(p.Scalar());
+  void go(mkn::mod::Node const& node) {
+    if (node.is_string())
+      exec(node.str());
+    else if (node.is_list()) {
+      for (auto const& p : node.list()) {
+        if (!p.is_string()) KEXCEPT(mkn::mod::Exception, _MKN_MOD_EXEC_UNSUPPORTED_TYPE_);
+        exec(p.str());
       }
-    } else if (!node.IsNull())
+    } else if (node.size())  // an empty map: nothing given for this phase
       KEXCEPT(mkn::mod::Exception, _MKN_MOD_EXEC_UNSUPPORTED_TYPE_);
   }
 
  public:
-  void init(mkn::mod::Context&, const YAML::Node& node) KTHROW(std::exception) override {
+  void init(mkn::mod::Context&, mkn::mod::Node const& node) KTHROW(std::exception) override {
     go(node);
   }
-  void compile(mkn::mod::Context&, const YAML::Node& node) KTHROW(std::exception) override {
+  void compile(mkn::mod::Context&, mkn::mod::Node const& node) KTHROW(std::exception) override {
     go(node);
   }
-  void link(mkn::mod::Context&, const YAML::Node& node) KTHROW(std::exception) override {
+  void link(mkn::mod::Context&, mkn::mod::Node const& node) KTHROW(std::exception) override {
     go(node);
   }
-  void test(mkn::mod::Context&, const YAML::Node& node) KTHROW(std::exception) override {
+  void test(mkn::mod::Context&, mkn::mod::Node const& node) KTHROW(std::exception) override {
     go(node);
   }
-  void pack(mkn::mod::Context&, const YAML::Node& node) KTHROW(std::exception) override {
+  void pack(mkn::mod::Context&, mkn::mod::Node const& node) KTHROW(std::exception) override {
     go(node);
   }
 };
